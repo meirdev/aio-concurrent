@@ -5,8 +5,6 @@ Run concurrent tasks with asyncio.
 # Example
 
 ```python
-import asyncio
-
 from aio_concurrent import concurrent
 from aio_concurrent.functions import rm
 

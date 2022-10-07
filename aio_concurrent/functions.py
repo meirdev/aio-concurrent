@@ -14,18 +14,27 @@ class BaseFunction(ABC):
 
 
 class IOBaseFunction(BaseFunction, ABC):
-    def __init__(self, path: str) -> None:
+    def __init__(self, *path: str) -> None:
         self._path = path
 
     def get_items(self) -> list[str]:
-        files = glob.glob(self._path, recursive=True)
-        files.sort(reverse=True)
-        return files
+        def _glob(path: str) -> set[str]:
+            return set(map(os.path.realpath, glob.iglob(path, recursive=True)))  # type: ignore[arg-type]
+
+        paths: set[str] = set()
+
+        for i in self._path:
+            if i.startswith("!"):
+                paths -= _glob(i[1:])
+            else:
+                paths |= _glob(i)
+
+        return sorted(paths, reverse=True)
 
 
 class chmod(IOBaseFunction):
-    def __init__(self, path: str, mode: int) -> None:
-        super().__init__(path)
+    def __init__(self, *path: str, mode: int) -> None:
+        super().__init__(*path)
 
         self._mode = mode
 
@@ -34,8 +43,8 @@ class chmod(IOBaseFunction):
 
 
 class chown(IOBaseFunction):
-    def __init__(self, path: str, uid: int, gid: int) -> None:
-        super().__init__(path)
+    def __init__(self, *path: str, uid: int, gid: int) -> None:
+        super().__init__(*path)
 
         self._uid = uid
         self._gid = gid

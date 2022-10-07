@@ -43,7 +43,9 @@ async def test_concurrent(mocker):
 
 
 @pytest.mark.asyncio
-async def test_concurrent_gather():
+async def test_concurrent_gather(mocker):
+    spy = mocker.spy(asyncio, "sleep")
+
     async def foo():
         for _ in range(3):
             await asyncio.sleep(1)
@@ -55,3 +57,5 @@ async def test_concurrent_gather():
     end = time.time()
 
     assert end - start < 3 + 0.5
+
+    assert spy.call_count == 3
