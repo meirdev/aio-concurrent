@@ -9,7 +9,7 @@ class BaseFunction(ABC):
         ...
 
     @abstractmethod
-    def __call__(self, file: str) -> None:  # pragma: no cover
+    def __call__(self, item: str) -> None:  # pragma: no cover
         ...
 
 
